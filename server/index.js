@@ -23,59 +23,16 @@ import {
 } from './schedule.js';
 
 const PORT = Number(process.env.PORT) || 3001;
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 
-/** Comma-separated list from CLIENT_ORIGIN (e.g. local Vite + Vercel production URL). */
-function parseClientOrigins() {
-  const raw = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
-  return raw
-    .split(',')
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-const ALLOW_VERCEL_PREVIEW =
-  process.env.CORS_ALLOW_VERCEL_PREVIEW === '1' ||
-  process.env.CORS_ALLOW_VERCEL_PREVIEW === 'true';
-
-function isVercelPreviewOrigin(origin) {
-  if (!ALLOW_VERCEL_PREVIEW || !origin) return false;
-  try {
-    const u = new URL(origin);
-    return u.protocol === 'https:' && u.hostname.endsWith('.vercel.app');
-  } catch {
-    return false;
-  }
-}
-
-function allowCorsOrigin(origin) {
-  if (!origin) return true;
-  const list = parseClientOrigins();
-  if (list.includes('*')) return true;
-  if (list.includes(origin)) return true;
-  if (isVercelPreviewOrigin(origin)) return true;
-  return false;
-}
-
 const app = express();
-app.use(
-  cors({
-    origin(origin, cb) {
-      cb(null, allowCorsOrigin(origin));
-    },
-    credentials: true,
-  }),
-);
+app.use(cors({ origin: CLIENT_ORIGIN, credentials: true }));
 app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: {
-    origin(origin, cb) {
-      cb(null, allowCorsOrigin(origin));
-    },
-    methods: ['GET', 'POST'],
-  },
+  cors: { origin: CLIENT_ORIGIN, methods: ['GET', 'POST'] },
 });
 
 /** @type {ReturnType<typeof createTournamentState>} */
@@ -294,10 +251,5 @@ server.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Pool tournament server on http://localhost:${PORT}`);
   // eslint-disable-next-line no-console
-  console.log(
-    `CORS: CLIENT_ORIGIN=${parseClientOrigins().join(' | ')}` +
-      (ALLOW_VERCEL_PREVIEW ? ' + *.vercel.app (CORS_ALLOW_VERCEL_PREVIEW)' : ''),
-  );
-  // eslint-disable-next-line no-console
-  console.log(`Admin password from env ADMIN_PASSWORD (default demo: ${ADMIN_PASSWORD})`);
+  console.log(`CORS origin: ${CLIENT_ORIGIN} | Admin password env: ADMIN_PASSWORD (default demo: ${ADMIN_PASSWORD})`);
 });

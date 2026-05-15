@@ -9,7 +9,7 @@ import { derivePlayerStatus } from '../utils/playerStatus.js';
  * Public tournament dashboard: signup, board, waitlist, countdown, player status.
  */
 export function HomePage() {
-  const { tournament, schedule, playerName, realtimeConfigured } = useTournamentSocket();
+  const { tournament, schedule, playerName } = useTournamentSocket();
 
   const filled = tournament?.slots?.length ?? 0;
   const max = schedule?.maxSlots ?? 16;
@@ -26,12 +26,6 @@ export function HomePage() {
 
   return (
     <div className="space-y-8 animate-slideIn">
-      {import.meta.env.PROD && !realtimeConfigured && (
-        <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100 text-center sm:text-left">
-          Live signup is disabled until the host sets <code className="text-xs bg-black/30 px-1 rounded">VITE_SOCKET_URL</code> on
-          Vercel to the public API and redeploys.
-        </div>
-      )}
       <div className="flex flex-col lg:flex-row gap-6 items-center lg:items-stretch">
         <div className="flex-1 w-full max-w-xl lg:max-w-none">
           <SignupForm />

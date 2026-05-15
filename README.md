@@ -80,25 +80,14 @@ PoolTournamentSystem/
    - App: `http://localhost:5173`
    - API + WebSocket: `http://localhost:3001`
 
-4. **Production (Vercel static site + Node API elsewhere)**
-
-   Vercel only serves `client/dist`. The **Socket.io server must run** on Render, Railway, Fly.io, a VPS, etc.
-
-   1. **Vercel (client)** — Project → Settings → Environment variables:
-      - `VITE_SOCKET_URL` = your API’s public origin, **`https://...`** (must match TLS; no `http://` from an `https://` Vercel page).
-      - Redeploy after saving (Vite bakes this in at build time).
-
-   2. **API host (server)** — In that service’s env:
-      - `CLIENT_ORIGIN` = comma list of allowed browser origins, e.g. `http://localhost:5173,https://your-app.vercel.app`
-      - **Or** set `CORS_ALLOW_VERCEL_PREVIEW=true` to allow any `https://*.vercel.app` preview URL (optional; tighten for strict production).
-      - `ADMIN_PASSWORD` = organizer password.
-
-   3. **Local production check**
+4. **Production build** (static client + run server):
 
    ```bash
    npm run build
    npm run start
    ```
+
+   Serve `client/dist` with any static host and point `CLIENT_ORIGIN` / CORS to that origin; set `VITE_SOCKET_URL` at build time to your public API URL.
 
 ## Run commands (cheat sheet)
 

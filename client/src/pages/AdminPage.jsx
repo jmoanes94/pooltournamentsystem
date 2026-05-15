@@ -24,7 +24,6 @@ export function AdminPage() {
     adminResetAll,
     soundEnabled,
     toggleSound,
-    realtimeConfigured,
   } = useTournamentSocket();
 
   const [password, setPassword] = useState('');
@@ -45,12 +44,12 @@ export function AdminPage() {
 
   // On connect / reconnect, silently re-authenticate when this tab has a saved organizer password.
   useEffect(() => {
-    if (!connected || !realtimeConfigured) return;
+    if (!connected) return;
     const pw = passwordRef.current;
     if (!pw) return;
     let cancelled = false;
     adminLogin(pw).then((res) => {
-      if (cancelled || res?.misconfigured) return;
+      if (cancelled) return;
       if (res?.ok) {
         setLoggedIn(true);
       } else if (res?.timeout) {
@@ -66,7 +65,7 @@ export function AdminPage() {
     return () => {
       cancelled = true;
     };
-  }, [connected, adminLogin, realtimeConfigured]);
+  }, [connected, adminLogin]);
 
   async function onLogin(e) {
     e.preventDefault();
@@ -86,10 +85,6 @@ export function AdminPage() {
       setPassword(pwd);
       setLoggedIn(true);
       toast.success('You are signed in as an organizer.');
-    } else if (res?.misconfigured) {
-      toast.error(
-        'This Vercel build is not pointed at your API. Add VITE_SOCKET_URL in Vercel → Environment Variables (your public https://… API), then redeploy.',
-      );
     } else if (res?.timeout) {
       toast.error('No response from the server. Check your connection and try again.');
     } else {
@@ -130,17 +125,6 @@ export function AdminPage() {
         }}
       />
       <div className="space-y-6 max-w-4xl mx-auto animate-slideIn text-center sm:text-left">
-      {import.meta.env.PROD && !realtimeConfigured && (
-        <div className="rounded-2xl border border-amber-500/40 bg-amber-500/10 px-4 py-3 text-sm text-amber-100 text-left">
-          <p className="font-semibold text-amber-50">Live server URL is missing</p>
-          <p className="mt-1 text-amber-100/90 leading-snug">
-            Vercel only hosts this page. Add <code className="text-xs bg-black/30 px-1 rounded">VITE_SOCKET_URL</code>{' '}
-            in Vercel (your Socket.io API, e.g. <code className="text-xs bg-black/30 px-1 rounded">https://api.yourhost.com</code>
-            ), redeploy, then set your API&apos;s <code className="text-xs bg-black/30 px-1 rounded">CLIENT_ORIGIN</code> to
-            this site or enable <code className="text-xs bg-black/30 px-1 rounded">CORS_ALLOW_VERCEL_PREVIEW=true</code>.
-          </p>
-        </div>
-      )}
       <div className="rounded-2xl border border-neon-magenta/25 bg-slate-900/60 p-5 sm:p-6">
         <h1 className="text-2xl font-bold text-white">Organizer tools</h1>
         <p className="text-sm text-slate-400 mt-1">
@@ -148,7 +132,7 @@ export function AdminPage() {
           Players see updates right away — no refresh needed.
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-          {!loggedIn && realtimeConfigured && (
+          {!loggedIn && (
             <form
               onSubmit={onLogin}
               className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center w-full max-w-md sm:max-w-none mx-auto sm:mx-0"
@@ -188,7 +172,7 @@ export function AdminPage() {
           </button>
           <span className="text-xs text-slate-500">
             {connected ? 'Online — changes sync to every phone and computer.' : 'Offline — we will reconnect for you.'}
-            {!loggedIn && realtimeConfigured && (
+            {!loggedIn && (
               <>
                 {' '}
                 (Default password is in the README if you have not changed it. Refreshing the page keeps you signed in on
@@ -209,7 +193,7 @@ export function AdminPage() {
         </div>
       </div>
 
-      {!loggedIn && !getOrganizerSessionPassword() && realtimeConfigured && (
+      {!loggedIn && !getOrganizerSessionPassword() && (
         <p className="text-sm text-amber-200/90 border border-amber-500/20 rounded-xl px-4 py-3 bg-amber-500/5">
           Sign in above to move players between lists. Until then, buttons stay hidden so nothing happens by accident.
         </p>
