@@ -82,7 +82,7 @@ export function getCountdownContext(now = new Date()) {
   return {
     label: 'closed',
     target: nextOpen,
-    message: 'Sign-up opens every Wednesday at 11:00 AM. Use the timer below to see when you can join next.',
+    message: 'Wednesdays at 11:00 AM — sign-up opens.\nThe countdown below shows when you can join next.',
   };
 }
 

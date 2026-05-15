@@ -63,7 +63,7 @@ export function RemovePlayerModal({ open, variant, playerName, onClose, onConfir
         aria-modal="true"
         aria-labelledby="remove-player-modal-title"
         aria-describedby="remove-player-modal-desc"
-        className="relative z-[1] w-full max-w-md rounded-2xl border border-amber-500/35 bg-slate-900 shadow-2xl shadow-amber-900/15 p-5 sm:p-6 animate-slideIn"
+        className="relative z-[1] w-full max-w-md rounded-2xl border border-amber-500/35 bg-slate-900 shadow-2xl shadow-amber-900/15 p-5 sm:p-6 animate-slideIn text-left"
       >
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-500/15 border border-amber-500/35 text-amber-200 text-lg mb-4">
           ?
@@ -74,7 +74,7 @@ export function RemovePlayerModal({ open, variant, playerName, onClose, onConfir
         <p id="remove-player-modal-desc" className="mt-2 text-sm text-slate-400 leading-relaxed">
           {cfg.body(playerName)}
         </p>
-        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+        <div className="mt-6 flex flex-col-reverse sm:flex-row justify-center sm:justify-end gap-2 sm:gap-3">
           <button
             type="button"
             autoFocus

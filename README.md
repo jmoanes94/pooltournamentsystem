@@ -120,6 +120,20 @@ PoolTournamentSystem/
 └──────────────────────────────────────────────────────────────────┘
 ```
 
+## Git and GitHub
+
+This folder is a normal Git repo. **Current remote:** `origin` → `https://github.com/jmoanes1/pooltournamentsystem.git`.
+
+| Goal | What to do |
+|------|----------------|
+| **Send your latest work** | `git add -A` → `git commit -m "Describe your change"` → `git push origin main` |
+| **Check the connection** | `git fetch origin` (no output usually means OK) |
+| **Use a different GitHub repo** | Create the empty repo on GitHub, then: `git remote set-url origin https://github.com/YOU/NEW-REPO.git` then `git push -u origin main` |
+| **Windows: fix “auth failed” / reconnect sign-in** | Open **Credential Manager** → **Windows Credentials** → remove old `github.com` entries, then push again and sign in. Or use a [Personal Access Token](https://github.com/settings/tokens) as the password when Git prompts you. |
+| **Start completely fresh on GitHub** (destructive) | Create a **new** empty repository, set `origin` to it as above, then `git push -u origin main`. To replace all history with one new commit locally first, search for “git orphan branch single commit”; only do this if you understand `git push --force`. |
+
+Your machine currently shows **branch `main` in sync with `origin/main`** and a **clean** working tree, so there is nothing new to push until you change files and commit again.
+
 ## Security note
 
 Admin auth is a **shared password** over Socket.io — suitable for trusted local / LAN ops. For production on the public internet, put the API behind HTTPS, rotate secrets, and replace this with real auth.

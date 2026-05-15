@@ -7,7 +7,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col pool-grid">
       <Navbar />
-      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-16 pt-6">
+      <main className="flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-16 pt-6 text-center sm:text-left">
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/admin" element={<AdminPage />} />

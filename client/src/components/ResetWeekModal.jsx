@@ -41,7 +41,7 @@ export function ResetWeekModal({ open, onClose, onConfirm }) {
         aria-modal="true"
         aria-labelledby="reset-week-modal-title"
         aria-describedby="reset-week-modal-desc"
-        className="relative z-[1] w-full max-w-md rounded-2xl border border-red-500/40 bg-slate-900 shadow-2xl shadow-red-900/20 p-5 sm:p-6 animate-slideIn"
+        className="relative z-[1] w-full max-w-md rounded-2xl border border-red-500/40 bg-slate-900 shadow-2xl shadow-red-900/20 p-5 sm:p-6 animate-slideIn text-left"
       >
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/15 border border-red-500/30 text-red-300 text-lg mb-4">
           ⚠
@@ -53,7 +53,7 @@ export function ResetWeekModal({ open, onClose, onConfirm }) {
           This removes every name from the tables, waitlist, waiting list, and anyone marked &quot;no&quot; for this
           week. Players also lose saved bell notifications on their devices. This cannot be undone from here.
         </p>
-        <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-2 sm:gap-3">
+        <div className="mt-6 flex flex-col-reverse sm:flex-row justify-center sm:justify-end gap-2 sm:gap-3">
           <button
             type="button"
             autoFocus

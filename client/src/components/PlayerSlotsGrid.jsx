@@ -19,8 +19,8 @@ export function PlayerSlotsGrid({ slots, maxSlots, myName }) {
   const me = norm(myName);
 
   return (
-    <section className="glass rounded-2xl p-5 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-5">
+    <section className="glass rounded-2xl p-5 sm:p-6 text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-5 items-center">
         <div>
           <h3 className="text-lg font-semibold text-white">Table spots (16 max)</h3>
           <p className="text-sm text-slate-400">Players who already got a &quot;yes&quot; from the organizer ({slots.length} of {maxSlots})</p>
@@ -42,7 +42,7 @@ export function PlayerSlotsGrid({ slots, maxSlots, myName }) {
                   : 'border-dashed border-white/10 bg-slate-950/40'
               }`}
             >
-              <div className="flex items-center justify-between gap-1 min-w-0">
+              <div className="flex items-center justify-center sm:justify-between gap-1 min-w-0">
                 <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 shrink-0">#{idx + 1}</span>
                 {slot && (
                   <span className="text-[8px] sm:text-[10px] font-semibold uppercase tracking-wide text-neon-green border border-neon-green/40 rounded-full px-1 py-0.5 sm:px-2 sm:py-0.5 bg-neon-green/10 truncate max-w-[50%]">
@@ -51,7 +51,7 @@ export function PlayerSlotsGrid({ slots, maxSlots, myName }) {
                 )}
               </div>
               <div
-                className={`mt-1 sm:mt-2 text-[11px] sm:text-sm font-medium leading-tight line-clamp-2 break-words min-h-0 ${
+                className={`mt-1 sm:mt-2 text-[11px] sm:text-sm font-medium leading-tight line-clamp-2 break-words min-h-0 text-center sm:text-left ${
                   slot ? 'text-white' : 'text-slate-600'
                 }`}
                 title={slot ? slot.name : undefined}

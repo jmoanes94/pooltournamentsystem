@@ -6,7 +6,7 @@ export function WaitlistPanel({ waitlist, myName }) {
 
   if (!waitlist?.length) {
     return (
-      <section className="glass rounded-2xl p-5 sm:p-6 border border-neon-gold/10">
+      <section className="glass rounded-2xl p-5 sm:p-6 border border-neon-gold/10 text-center sm:text-left">
         <h3 className="text-lg font-semibold text-white mb-1">Waitlist</h3>
         <p className="text-sm text-slate-400">No one is waiting right now — there is still room at the tables.</p>
       </section>
@@ -14,8 +14,8 @@ export function WaitlistPanel({ waitlist, myName }) {
   }
 
   return (
-    <section className="glass rounded-2xl p-5 sm:p-6 border border-neon-gold/20">
-      <div className="flex items-center justify-between gap-2 mb-4">
+    <section className="glass rounded-2xl p-5 sm:p-6 border border-neon-gold/20 text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 mb-4">
         <div>
           <h3 className="text-lg font-semibold text-white">Waitlist</h3>
           <p className="text-sm text-slate-400">When a table opens, we go from the top of this list first.</p>
@@ -30,13 +30,13 @@ export function WaitlistPanel({ waitlist, myName }) {
           return (
             <li
               key={w.id}
-              className={`flex items-center justify-between rounded-xl border px-3 py-2.5 ${
+              className={`flex flex-col sm:flex-row items-center justify-between gap-2 rounded-xl border px-3 py-2.5 text-center sm:text-left ${
                 isMe
                   ? 'border-neon-gold/60 bg-neon-gold/10'
                   : 'border-white/10 bg-slate-950/60'
               }`}
             >
-              <div className="flex items-center gap-3 min-w-0">
+              <div className="flex items-center gap-3 min-w-0 justify-center sm:justify-start">
                 <span className="font-mono text-neon-gold text-sm w-8 shrink-0">#{w.position}</span>
                 <span className={`truncate text-sm ${isMe ? 'text-neon-gold font-semibold' : 'text-slate-100'}`}>
                   {w.name}

@@ -106,14 +106,14 @@ export function AdminPage() {
           else adminReject(name);
         }}
       />
-      <div className="space-y-6 max-w-4xl mx-auto animate-slideIn">
+      <div className="space-y-6 max-w-4xl mx-auto animate-slideIn text-center sm:text-left">
       <div className="rounded-2xl border border-neon-magenta/25 bg-slate-900/60 p-5 sm:p-6">
         <h1 className="text-2xl font-bold text-white">Organizer tools</h1>
         <p className="text-sm text-slate-400 mt-1">
           Say yes or no to new names, move people off the list if plans change, and start a clean week when you need to.
           Players see updates right away — no refresh needed.
         </p>
-        <div className="mt-4 flex flex-wrap items-center gap-3">
+        <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
           <form onSubmit={onLogin} className="flex flex-wrap gap-2 items-center">
             <input
               type="password"
@@ -170,7 +170,7 @@ export function AdminPage() {
             empty="No new names are waiting."
             rows={tournament?.pending ?? []}
             actions={(row) => (
-              <div className="flex gap-2 justify-end">
+              <div className="flex gap-2 justify-center sm:justify-end flex-wrap w-full sm:w-auto">
                 <button
                   type="button"
                   className="text-xs rounded-lg px-2 py-1 border border-neon-green/40 text-neon-green hover:bg-neon-green/10"
@@ -196,13 +196,15 @@ export function AdminPage() {
             badge="Confirmed"
             badgeClass="text-neon-green border-neon-green/40 bg-neon-green/10"
             actions={(row) => (
-              <button
-                type="button"
-                className="text-xs rounded-lg px-2 py-1 border border-white/15 text-slate-200 hover:bg-white/5"
-                onClick={() => setPlayerModal({ variant: 'table', name: row.name })}
-              >
-                Remove from table
-              </button>
+              <div className="flex justify-center sm:justify-end w-full sm:w-auto">
+                <button
+                  type="button"
+                  className="text-xs rounded-lg px-2 py-1 border border-white/15 text-slate-200 hover:bg-white/5"
+                  onClick={() => setPlayerModal({ variant: 'table', name: row.name })}
+                >
+                  Remove from table
+                </button>
+              </div>
             )}
           />
 
@@ -213,7 +215,7 @@ export function AdminPage() {
             badge={(row) => `#${row.position}`}
             badgeClass="text-neon-gold border-neon-gold/40 bg-neon-gold/10"
             actions={(row) => (
-              <div className="flex gap-2 justify-end flex-wrap">
+              <div className="flex gap-2 justify-center sm:justify-end flex-wrap w-full sm:w-auto">
                 <button
                   type="button"
                   className="text-xs rounded-lg px-2 py-1 border border-red-400/40 text-red-200 hover:bg-red-500/10"
@@ -232,7 +234,7 @@ export function AdminPage() {
             )}
           />
 
-          <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-4 flex flex-col sm:flex-row items-center sm:items-center sm:justify-between gap-3 text-center sm:text-left">
             <div>
               <p className="text-sm font-semibold text-red-200">Careful — reset everything</p>
               <p className="text-xs text-slate-400 mt-1">
@@ -258,8 +260,8 @@ export function AdminPage() {
 
 function AdminTable({ title, empty, rows, actions, badge, badgeClass }) {
   return (
-    <section className="glass rounded-2xl p-4 sm:p-5 border border-white/10">
-      <div className="flex items-center justify-between mb-3">
+    <section className="glass rounded-2xl p-4 sm:p-5 border border-white/10 text-center sm:text-left">
+      <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 mb-3">
         <h2 className="text-sm font-semibold text-white">{title}</h2>
         <span className="text-[10px] uppercase tracking-widest text-slate-500">{rows.length} people</span>
       </div>
@@ -268,9 +270,9 @@ function AdminTable({ title, empty, rows, actions, badge, badgeClass }) {
         {rows.map((row) => (
           <div
             key={row.id}
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 rounded-xl border border-white/5 bg-slate-950/60 px-3 py-2"
+            className="flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-2 rounded-xl border border-white/5 bg-slate-950/60 px-3 py-2"
           >
-            <div className="flex items-center gap-2 min-w-0">
+            <div className="flex items-center gap-2 min-w-0 justify-center sm:justify-start flex-wrap">
               <span className="text-sm font-medium text-white truncate">{row.name}</span>
               {badge && (
                 <span

@@ -42,7 +42,13 @@ export function NotificationBell() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-2 w-[min(100vw-2rem,22rem)] rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-neon-cyan/20 backdrop-blur-xl z-50 animate-slideIn overflow-hidden">
+        <div
+          className="
+            fixed z-[60] left-1/2 top-[4.75rem] w-[min(calc(100vw-2rem),22rem)] -translate-x-1/2
+            rounded-2xl border border-white/10 bg-slate-950/95 shadow-2xl shadow-neon-cyan/20 backdrop-blur-xl animate-slideIn overflow-hidden
+            sm:absolute sm:inset-auto sm:left-auto sm:right-0 sm:top-full sm:z-50 sm:mt-2 sm:w-[min(100vw-2rem,22rem)] sm:translate-x-0
+          "
+        >
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between px-3 py-2 border-b border-white/10">
             <div>
               <span className="text-xs font-semibold text-slate-300 uppercase tracking-wide">Notifications</span>

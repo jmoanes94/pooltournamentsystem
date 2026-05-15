@@ -25,13 +25,15 @@ export function CountdownTimer({ targetIso, label, helperText }) {
   const heading = label === 'open' ? 'Sign-up closes in' : 'Sign-up opens in';
 
   return (
-    <section className="glass rounded-2xl p-4 sm:p-6 overflow-hidden relative">
+    <section className="glass rounded-2xl p-4 sm:p-6 overflow-hidden relative text-center sm:text-left">
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-neon-cyan/5 via-transparent to-neon-green/5" />
       <div className="relative flex flex-col gap-4">
         {/* Copy block — full width on mobile so nothing competes with the timer row */}
         <div className="min-w-0">
           <p className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-neon-cyan/90 mb-1">{heading}</p>
-          <h2 className="text-base sm:text-xl font-semibold text-white leading-snug">{helperText}</h2>
+          <h2 className="text-base sm:text-xl font-semibold text-white leading-snug whitespace-pre-line line-clamp-2 overflow-hidden">
+            {helperText}
+          </h2>
         </div>
 
         {/* Fixed 4-column grid keeps D/H/M/S on one row on narrow screens (no flex-wrap jumble) */}
