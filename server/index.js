@@ -232,6 +232,21 @@ io.on('connection', (socket) => {
   });
 });
 
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    // eslint-disable-next-line no-console
+    console.error(
+      `[server] Port ${PORT} is already in use. Stop the other process or set a different PORT in server/.env.`,
+    );
+    // eslint-disable-next-line no-console
+    console.error(`[server] Windows: netstat -ano | findstr :${PORT}  then  taskkill /PID <pid> /F`);
+  } else {
+    // eslint-disable-next-line no-console
+    console.error('[server]', err);
+  }
+  process.exit(1);
+});
+
 server.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`Pool tournament server on http://localhost:${PORT}`);
