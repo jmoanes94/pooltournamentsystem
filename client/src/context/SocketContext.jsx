@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { io } from 'socket.io-client';
@@ -20,8 +21,7 @@ import {
   setSoundEnabled,
 } from '../utils/storage.js';
 import { playSoftChime } from '../utils/sound.js';
-
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || 'http://localhost:3001';
+import { getSocketBaseUrl, isRealtimeConfigured } from '../config/realtime.js';
 
 const SocketContext = createContext(null);
 
@@ -32,8 +32,18 @@ export function SocketProvider({ children }) {
   const [notifications, setNotifications] = useState(() => loadNotifications());
   const [soundEnabled, setSoundOn] = useState(() => getSoundEnabled());
   const [playerName, setPlayerNameState] = useState(() => getPlayerName());
-  // Polling first: many mobile / carrier networks block or stall WebSocket until upgrade; default order is more reliable.
-  const [socket] = useState(() => io(SOCKET_URL, { transports: ['polling', 'websocket'] }));
+  const connectErrorToastShown = useRef(false);
+
+  const [socket] = useState(() => {
+    const base = getSocketBaseUrl();
+    const shouldConnect = import.meta.env.DEV || Boolean(base);
+    // Production build without VITE_SOCKET_URL: do not connect to localhost (wrong on phones).
+    return io(base || 'http://127.0.0.1:9', {
+      transports: ['polling', 'websocket'],
+      autoConnect: shouldConnect,
+      reconnection: shouldConnect,
+    });
+  });
 
   const refreshNotifs = useCallback(() => {
     setNotifications(loadNotifications());
@@ -55,9 +65,26 @@ export function SocketProvider({ children }) {
     };
   }, [socket]);
 
+  /** One toast if the API URL is wrong, blocked (CORS), or offline — common on Vercel until env is set. */
+  useEffect(() => {
+    if (!isRealtimeConfigured()) return;
+    function onConnectError(err) {
+      if (connectErrorToastShown.current) return;
+      connectErrorToastShown.current = true;
+      const base = getSocketBaseUrl();
+      toast.error(
+        `Cannot reach the live server (${base}). Set VITE_SOCKET_URL to your public API (https) on Vercel, redeploy, and allow this site on the API (CLIENT_ORIGIN or CORS_ALLOW_VERCEL_PREVIEW).`,
+        { duration: 10_000 },
+      );
+      console.warn('[socket] connect_error', err?.message || err);
+    }
+    socket.on('connect_error', onConnectError);
+    return () => socket.off('connect_error', onConnectError);
+  }, [socket]);
+
   /** Re-join player room when name known (for realtime player alerts). */
   useEffect(() => {
-    if (!playerName.trim()) return;
+    if (!isRealtimeConfigured() || !playerName.trim()) return;
     socket.emit('player:join', playerName);
   }, [socket, playerName]);
 
@@ -133,6 +160,12 @@ export function SocketProvider({ children }) {
 
   const signup = useCallback(
     (name) => {
+      if (!isRealtimeConfigured()) {
+        toast.error(
+          'This site is not wired to a live server. Set VITE_SOCKET_URL in Vercel (or your host), rebuild, then try again.',
+        );
+        return;
+      }
       socket.emit('player:signup', name);
       persistPlayerName(name);
       setPlayerNameState(name.trim());
@@ -144,6 +177,10 @@ export function SocketProvider({ children }) {
   const adminLogin = useCallback(
     (password) =>
       new Promise((resolve) => {
+        if (!isRealtimeConfigured()) {
+          resolve({ ok: false, misconfigured: true });
+          return;
+        }
         const reqId = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
         const ACK_MS = 30000;
         let settled = false;
@@ -236,6 +273,7 @@ export function SocketProvider({ children }) {
       setPlayerNameState,
       soundEnabled,
       toggleSound,
+      realtimeConfigured: isRealtimeConfigured(),
     }),
     [
       socket,
