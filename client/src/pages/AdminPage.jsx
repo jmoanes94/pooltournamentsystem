@@ -33,10 +33,13 @@ export function AdminPage() {
   const [playerModal, setPlayerModal] = useState(null);
   const passwordRef = useRef('');
 
-  // Put saved organizer password into the ref so the socket effect can rejoin the admins room after refresh.
+  // Restore saved organizer password into ref + state so mobile autofill / reconnect match the visible field.
   useEffect(() => {
     const saved = getOrganizerSessionPassword();
-    if (saved) passwordRef.current = saved;
+    if (saved) {
+      passwordRef.current = saved;
+      setPassword(saved);
+    }
   }, []);
 
   // On connect / reconnect, silently re-authenticate when this tab has a saved organizer password.
@@ -49,6 +52,9 @@ export function AdminPage() {
       if (cancelled) return;
       if (res?.ok) {
         setLoggedIn(true);
+      } else if (res?.timeout) {
+        // Keep saved session; next reconnect will retry (avoid clearing on flaky mobile networks).
+        setLoggedIn(false);
       } else {
         clearOrganizerSession();
         passwordRef.current = '';
@@ -63,12 +69,24 @@ export function AdminPage() {
 
   async function onLogin(e) {
     e.preventDefault();
-    const res = await adminLogin(password);
+    const form = e.currentTarget;
+    // Mobile Safari/Chrome often autofill the field without firing React onChange, so read the live DOM value.
+    const field = form.elements.namedItem('organizer-password');
+    const fromDom = field && 'value' in field ? String(field.value) : '';
+    const pwd = (fromDom || password || passwordRef.current).trim();
+    if (!pwd) {
+      toast.error('Enter the organizer password.');
+      return;
+    }
+    const res = await adminLogin(pwd);
     if (res?.ok) {
-      passwordRef.current = password;
-      setOrganizerSessionPassword(password);
+      passwordRef.current = pwd;
+      setOrganizerSessionPassword(pwd);
+      setPassword(pwd);
       setLoggedIn(true);
       toast.success('You are signed in as an organizer.');
+    } else if (res?.timeout) {
+      toast.error('No response from the server. Check your connection and try again.');
     } else {
       toast.error('That password did not work. Try again or check with whoever runs the league.');
     }
@@ -114,17 +132,24 @@ export function AdminPage() {
           Players see updates right away — no refresh needed.
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-          <form onSubmit={onLogin} className="flex flex-wrap gap-2 items-center">
+          <form onSubmit={onLogin} className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center w-full max-w-md sm:max-w-none mx-auto sm:mx-0">
             <input
+              id="organizer-password"
+              name="organizer-password"
               type="password"
               placeholder="Organizer password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="rounded-lg bg-slate-950 border border-white/10 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-neon-magenta/40"
+              autoComplete="current-password"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              enterKeyHint="go"
+              className="w-full min-h-[44px] rounded-lg bg-slate-950 border border-white/10 px-3 py-2.5 text-base sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-neon-magenta/40"
             />
             <button
               type="submit"
-              className="rounded-lg px-4 py-2 text-sm font-semibold bg-neon-magenta/90 text-slate-950 hover:brightness-110"
+              className="min-h-[44px] shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold bg-neon-magenta/90 text-slate-950 hover:brightness-110"
             >
               {loggedIn ? 'Sign in again' : 'Sign in'}
             </button>

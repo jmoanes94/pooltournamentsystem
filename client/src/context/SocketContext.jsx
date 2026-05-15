@@ -143,7 +143,12 @@ export function SocketProvider({ children }) {
   const adminLogin = useCallback(
     (password) =>
       new Promise((resolve) => {
-        socket.emit('admin:login', password, (res) => resolve(res));
+        const ACK_MS = 15000;
+        const timer = setTimeout(() => resolve({ ok: false, timeout: true }), ACK_MS);
+        socket.emit('admin:login', password, (res) => {
+          clearTimeout(timer);
+          resolve(res ?? { ok: false });
+        });
       }),
     [socket],
   );

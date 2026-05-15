@@ -150,7 +150,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('admin:login', (password, cb) => {
-    const ok = password === ADMIN_PASSWORD;
+    const pw = String(password ?? '').trim();
+    const expected = String(ADMIN_PASSWORD ?? '').trim();
+    const ok = pw === expected;
     if (ok) {
       socket.join('admins');
     }
