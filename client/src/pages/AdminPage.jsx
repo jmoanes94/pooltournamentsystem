@@ -132,28 +132,33 @@ export function AdminPage() {
           Players see updates right away — no refresh needed.
         </p>
         <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-          <form onSubmit={onLogin} className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center w-full max-w-md sm:max-w-none mx-auto sm:mx-0">
-            <input
-              id="organizer-password"
-              name="organizer-password"
-              type="password"
-              placeholder="Organizer password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              enterKeyHint="go"
-              className="w-full min-h-[44px] rounded-lg bg-slate-950 border border-white/10 px-3 py-2.5 text-base sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-neon-magenta/40"
-            />
-            <button
-              type="submit"
-              className="min-h-[44px] shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold bg-neon-magenta/90 text-slate-950 hover:brightness-110"
+          {!loggedIn && (
+            <form
+              onSubmit={onLogin}
+              className="flex flex-col sm:flex-row flex-wrap gap-2 items-stretch sm:items-center w-full max-w-md sm:max-w-none mx-auto sm:mx-0"
             >
-              {loggedIn ? 'Sign in again' : 'Sign in'}
-            </button>
-          </form>
+              <input
+                id="organizer-password"
+                name="organizer-password"
+                type="password"
+                placeholder="Organizer password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                enterKeyHint="go"
+                className="w-full min-h-[44px] rounded-lg bg-slate-950 border border-white/10 px-3 py-2.5 text-base sm:text-sm text-white focus:outline-none focus:ring-2 focus:ring-neon-magenta/40"
+              />
+              <button
+                type="submit"
+                className="min-h-[44px] shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold bg-neon-magenta/90 text-slate-950 hover:brightness-110"
+              >
+                Sign in
+              </button>
+            </form>
+          )}
           <button
             type="button"
             onClick={toggleSound}
@@ -166,9 +171,15 @@ export function AdminPage() {
             {soundEnabled ? 'Chime on' : 'Chime off'}
           </button>
           <span className="text-xs text-slate-500">
-            {connected ? 'Online — changes sync to every phone and computer.' : 'Offline — we will reconnect for you.'}{' '}
-            (Default password is in the README if you have not changed it. Refreshing the page keeps you signed in on
-            this tab.)
+            {connected ? 'Online — changes sync to every phone and computer.' : 'Offline — we will reconnect for you.'}
+            {!loggedIn && (
+              <>
+                {' '}
+                (Default password is in the README if you have not changed it. Refreshing the page keeps you signed in on
+                this tab.)
+              </>
+            )}
+            {loggedIn && <> You are signed in on this tab.</>}
           </span>
           {loggedIn && (
             <button

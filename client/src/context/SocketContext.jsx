@@ -32,7 +32,8 @@ export function SocketProvider({ children }) {
   const [notifications, setNotifications] = useState(() => loadNotifications());
   const [soundEnabled, setSoundOn] = useState(() => getSoundEnabled());
   const [playerName, setPlayerNameState] = useState(() => getPlayerName());
-  const [socket] = useState(() => io(SOCKET_URL, { transports: ['websocket', 'polling'] }));
+  // Polling first: many mobile / carrier networks block or stall WebSocket until upgrade; default order is more reliable.
+  const [socket] = useState(() => io(SOCKET_URL, { transports: ['polling', 'websocket'] }));
 
   const refreshNotifs = useCallback(() => {
     setNotifications(loadNotifications());
@@ -143,12 +144,25 @@ export function SocketProvider({ children }) {
   const adminLogin = useCallback(
     (password) =>
       new Promise((resolve) => {
-        const ACK_MS = 15000;
-        const timer = setTimeout(() => resolve({ ok: false, timeout: true }), ACK_MS);
-        socket.emit('admin:login', password, (res) => {
+        const reqId = `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+        const ACK_MS = 30000;
+        let settled = false;
+        const finish = (res) => {
+          if (settled) return;
+          settled = true;
           clearTimeout(timer);
-          resolve(res ?? { ok: false });
-        });
+          socket.off('admin:login_ack', onAck);
+          if (res?.timeout) resolve({ ok: false, timeout: true });
+          else resolve({ ok: res?.ok === true });
+        };
+        const timer = setTimeout(() => finish({ ok: false, timeout: true }), ACK_MS);
+        function onAck(res) {
+          if (!res || res.reqId !== reqId) return;
+          finish(res);
+        }
+        socket.on('admin:login_ack', onAck);
+        // Payload carries reqId so parallel or retried logins cannot match the wrong ack.
+        socket.emit('admin:login', { password, reqId });
       }),
     [socket],
   );

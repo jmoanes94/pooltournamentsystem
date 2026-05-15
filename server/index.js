@@ -149,14 +149,21 @@ io.on('connection', (socket) => {
     broadcastState();
   });
 
-  socket.on('admin:login', (password, cb) => {
+  socket.on('admin:login', (payload) => {
+    // Accept { password, reqId } (preferred) or legacy plain string from older clients.
+    const password =
+      payload != null && typeof payload === 'object' && 'password' in payload ? payload.password : payload;
+    const reqId =
+      payload != null && typeof payload === 'object' && payload.reqId != null ? String(payload.reqId) : null;
     const pw = String(password ?? '').trim();
     const expected = String(ADMIN_PASSWORD ?? '').trim();
     const ok = pw === expected;
     if (ok) {
       socket.join('admins');
     }
-    if (typeof cb === 'function') cb({ ok });
+    const ack = reqId ? { ok, reqId } : { ok };
+    // Event-based ack: more reliable on mobile than Socket.io callback packets alone.
+    socket.emit('admin:login_ack', ack);
   });
 
   socket.on('admin:approve', (rawName) => {
